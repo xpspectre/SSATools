@@ -1,0 +1,37 @@
+function parse_input
+
+filename = 'test.txt';
+fprintf('Reading input file: %s\n', filename)
+
+fid = fopen(filename);
+tline = fgetl(fid);
+
+while ischar(tline)
+    if strcmpi(tline,'[Settings]')
+        parse_settings();
+    elseif strcmpi(tline,'[Constants]')
+        parse_constants();
+    elseif strcmpi(tline,'[Species]')
+        parse_species();
+    elseif strcmpi(tline,'[Reactions]')
+        parse_reactions();
+    elseif strfind(tline,'%')==1
+        % comment, no nothing
+    %else
+    %    fprintf('Unknown input: %s\n',tline)
+    end
+    tline = fgetl(fid);
+end
+
+
+
+
+fclose(fid);
+
+function parse_settings
+
+function parse_constants
+
+function parse_species
+
+function parse_reactions

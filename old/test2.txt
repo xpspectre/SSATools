@@ -1,0 +1,19 @@
+[Settings]
+tstart = 0
+tend = 100
+tsteps = 1e6
+
+[Constants]
+k1 = 0.01
+k2 = 1.6e-3
+k3 = 5e-4
+
+[Species]
+A = 100
+B = 100
+C = 0
+
+[Reactions]
+1 = A ->{k1} B
+2 = B ->{k2} A
+3 = B ->{k3} C

@@ -1,0 +1,21 @@
+function parse_input(filename)
+% Parse input file, .ini format
+% Calls inifile.m by Primoz Cermel, http://www.mathworks.com/matlabcentral/fileexchange/loadFile.do?objectId=2976&objectType=file
+    [keys,~,~]=inifile(filename,'readall');
+    
+    % Parse Settings
+    settings_cell = keys(strcmpi('settings',keys(:,1)),:);
+    settings.tstart = str2double(cell2mat(settings_cell(strcmpi('tstart',settings_cell(:,3)),4)));
+    settings.tend = str2double(cell2mat(settings_cell(strcmpi('tend',settings_cell(:,3)),4)));
+    settings.tsteps = str2double(cell2mat(settings_cell(strcmpi('tsteps',settings_cell(:,3)),4)));
+    
+    % Parse Constants
+    constants_cell = keys(strcmpi('constants',keys(:,1)),:);
+    constants = cell2struct(num2cell(str2double(constants_cell(:,4))),constants_cell(:,3),1);
+    
+    % Parse Species
+    species_cell = keys(strcmpi('species',keys(:,1)),:);
+    
+    % Parse Reactions
+    
+    disp(1)
