@@ -1,4 +1,4 @@
-function [t,s] = direct_solver(t0,s0,c,t_end,t_steps)
+function [t,s] = solve_direct(s0,tstart,tend,tsteps,V,c)
 
 % Calculate number of species
 N = length(s0);
@@ -8,10 +8,10 @@ t_store = zeros(tsteps,1);
 s_store = zeros(tsteps,N);
 
 % Initialize stored time and species
-t_store(1) = t0;
+t_store(1) = tstart;
 s_store(1,:) = s0;
 
 % Main solver loop
-while (t<t_end)
+while (t<tend && step<tsteps)
     
 end
