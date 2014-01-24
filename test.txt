@@ -1,8 +1,8 @@
 {
 	"settings" : {
 		"tstart" : 0,
-		"tend"   : 5000,
-		"tsteps" : 1e5,
+		"tend"   : 10000,
+		"tsteps" : 1e6,
 		"volume" : 1
 	},
 	"constants" : {

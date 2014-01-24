@@ -20,6 +20,11 @@ classdef Indexed_Priority_Queue < handle
             tau = ipq.tree(2,1);
         end
         
+        function tau = get_rxn(ipq,rxn)
+            % Returns time tau of rxn
+            tau = get_value(ipq,ipq.index(rxn));
+        end
+        
         function update_rxn(ipq,rxn,new_tau)
             % Changes the tau in reaction rxn
             % Looks up position i in tree for rxn
@@ -46,23 +51,51 @@ function update(ipq,i,new_val)
     update_aux(ipq,i);
 end
 
+% RECURSION NOT ALLOWED IN MATLAB CODER!!!
+% function update_aux(ipq,i)
+%     % Rearrange tree in response to a changed node i
+%     
+%     parent = get_parent(ipq,i);
+%     if has_children(ipq,i)
+%         min_child = get_min_child(ipq,i);
+%     end
+%     
+%     if get_value(ipq,i) < get_value(ipq,parent)
+%         swap(ipq,i,parent);
+%         update_aux(ipq,parent);
+%     elseif has_children(ipq,i) && get_value(ipq,i) > get_value(ipq,min_child)
+%         swap(ipq,i,min_child);
+%         update_aux(ipq,min_child);
+%     else
+%         % done
+%     end
+% end
+
 function update_aux(ipq,i)
     % Rearrange tree in response to a changed node i
     
-    parent = get_parent(ipq,i);
-    if has_children(ipq,i)
-        min_child = get_min_child(ipq,i);
+    while 1 % assume node i is in wrong place
+        
+        parent = get_parent(ipq,i);
+        if has_children(ipq,i)
+            min_child = get_min_child(ipq,i);
+        else
+            min_child = 0;
+        end
+        
+        if get_value(ipq,i) < get_value(ipq,parent)
+            swap(ipq,i,parent);
+            i = parent;
+        elseif has_children(ipq,i) && get_value(ipq,i) > get_value(ipq,min_child)
+            swap(ipq,i,min_child);
+            i = min_child;
+        else
+            break % node i in right place
+        end
+        
     end
     
-    if get_value(ipq,i) < get_value(ipq,parent)
-        swap(ipq,i,parent);
-        update_aux(ipq,parent);
-    elseif has_children(ipq,i) && get_value(ipq,i) > get_value(ipq,min_child)
-        swap(ipq,i,min_child);
-        update_aux(ipq,min_child);
-    else
-        % done
-    end
+
 end
 
 function set_value(ipq,i,val)

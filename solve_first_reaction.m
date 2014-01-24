@@ -28,7 +28,7 @@ function [t_out,s_out] = solve_first_reaction(settings,species,reactions)
     while (t<tend && step<tsteps)
 
         % Get reaction propensities
-        a = get_propensities(s_current,V);
+        a = get_propensities(s_current,0,V);
 
         % Calculate M independent random numbers
         taus = (1./a).*log(1./rand(1,M));

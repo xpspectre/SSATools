@@ -28,7 +28,7 @@ function [t_out,s_out] = solve_direct(settings,species,reactions)
     while (t<tend && step<tsteps)
 
         % Get reaction propensities
-        a = get_propensities(s_current,V);
+        a = get_propensities(s_current,0,V);
 
         % Propensity normalization
         a0 = sum(a);
