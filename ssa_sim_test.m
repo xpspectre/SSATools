@@ -1,7 +1,7 @@
 function ssa_sim_test
 
 %% Parse input file
-[settings,constants,species,reactions] = parse_input('test2test.txt');
+[settings,constants,species,reactions] = parse_input('test2.txt');
 
 %% Initialize
 % Generate reaction propensity solver
@@ -10,8 +10,11 @@ get_propensities_gen(constants,reactions);
 % Generate reaction updating block
 get_updates_gen(reactions);
 
-% Initial state of system/molecule counts
-s0 = struct2array(species);
+% Generate species unpacking (struct->array) function
+species_unpacker_gen(species);
+
+% Decrease simulation tsteps for test function
+settings.tsteps = 3;
 
 %% Simulate
 [t,s] = simulate_SSA(settings,constants,species,reactions);

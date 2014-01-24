@@ -3,7 +3,7 @@ function [t_out,s_out] = solve_direct(settings,species,species_names,reactions,r
     % species : struct with species names as fields and initial counts as values
     % c       : struct
     % reactions : struct
-    % s_out : struct of species names as fields and an array for time-dependent counts
+    % s_out : tsteps x N array of species concentrations over time
     
     % Required settings
     tstart = settings.tstart;
@@ -19,9 +19,7 @@ function [t_out,s_out] = solve_direct(settings,species,species_names,reactions,r
 
     % Preallocate and initialize t and s
     t_store = [tstart; zeros(tsteps-1,1)];
-    for i = 1:N
-        s_store.(species_names(i)) = [species.(species_names(i,:)); zeros(tsteps-1,1)];
-    end
+    s_store = [species_unpacker(species); zeros(tsteps-1,N)];
     t = tstart;
     s_current = species;
     step = 1;
@@ -51,18 +49,14 @@ function [t_out,s_out] = solve_direct(settings,species,species_names,reactions,r
         t = t + tau;
 
         % Store species counts and time
-        for i = 1:N
-            s_store.(species_names(i))(step) = s_current.(species_names(i));
-        end
+        s_store(step,:) = species_unpacker(s_current);
         t_store(step) = t;
 
     end
 
     % Output
     t_out = t_store(1:step);
-    for i = 1:N
-        s_out.(species_names(i)) = s_store.(species_names(i))(1:step);
-    end
+    s_out = s_store(1:step,:);
 
 
 function state = pick_rxn(probs)

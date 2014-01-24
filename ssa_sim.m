@@ -19,6 +19,9 @@ get_propensities_gen(constants,reactions);
 % Generate reaction updating block
 get_updates_gen(reactions);
 
+% Generate species unpacking (struct->array) function
+species_unpacker_gen(species);
+
 % Dependency graph
 dependency = get_dependency(reactions);
 
@@ -40,7 +43,7 @@ reaction_names = char(fieldnames(reactions));
 [t_out,s_out] = solve_direct(settings,species,species_names,reactions,reaction_names);
 
 % Diagnostic Plots
-plot(t_out,s_out.A,t_out,s_out.B,t_out,s_out.C)
+plot(t_out,s_out())
 
 % Convert structs to arrays for output
 t = 1;
