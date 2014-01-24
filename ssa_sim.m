@@ -22,14 +22,15 @@ get_updates_gen(reactions);
 % Generate species unpacking (struct->array) function
 species_unpacker_gen(species);
 
-% Dependency graph
-dependency = get_dependency(reactions);
+% Make dependency graph function
+get_dependency_gen(reactions);
 
 %% Simulate
 % Call compiled solver
 % [t_out,s_out] = solve_direct_mex(settings,species,reactions);
-[t_out,s_out] = solve_first_reaction_mex(settings,species,reactions);
+% [t_out,s_out] = solve_first_reaction_mex(settings,species,reactions);
+[t_out,s_out] = solve_next_reaction(settings,species,reactions);
 
 plot(t_out,s_out())
 
-disp(1)
+disp(0)

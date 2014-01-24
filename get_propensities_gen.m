@@ -4,7 +4,7 @@ function get_propensities_gen(constants,reactions)
 
 fid = fopen('get_propensities.m','w');
 
-fprintf(fid, 'function a = get_propensities(s,V)\n');
+fprintf(fid, 'function a = get_propensities(s,u,V)\n');
 
 constant_names = char(fieldnames(constants));
 reaction_names = char(fieldnames(reactions));
@@ -24,16 +24,32 @@ for i = 1:L
     fprintf(fid,'%s = %f;\n',constant_names(i,:),constants.(constant_names(i,:)));
 end
 
-% Preallocate reaction propensity array
-fprintf(fid,'a = zeros(1,%d);\n',M);
-
-% Default mass action kinetics
-% Print each propensity expression
+% Return a single propensity of the entire array
+fprintf(fid, 'switch u\n');
 for i = 1:M
+    fprintf(fid, 'case %d\n',i);
+    fprintf(fid, 'a = ',i);
+    print_propensity(fid,i,reactions);
+end
+
+% Otherwise print entire propensity array (next_reaction initialization or other methods each step)
+fprintf(fid, 'otherwise\n');
+fprintf(fid,'a = zeros(1,%d);\n',M); % Preallocate reaction propensity array
+
+for i = 1:M
+    fprintf(fid,'a(%d) = ',i); % reaction number
+    print_propensity(fid,i,reactions);
+end
+
+fprintf(fid, 'end\n');
+
+fclose(fid);
+
+function print_propensity(fid,i,reactions)
+    reaction_names = char(fieldnames(reactions));
     rate_str = reactions.(reaction_names(i,:)).rate_str;
     reactants = char(fieldnames(reactions.(reaction_names(i,:)).reactants));
     order = length(reactants);
-    fprintf(fid,'a(%d) = ',i); % reaction number
     if order==0
         fprintf(fid,'%s * V;\n',rate_str);
     elseif order==1
@@ -45,9 +61,6 @@ for i = 1:M
             fprintf(fid,'s.%s * (s.%s-1) * %s / V;\n',reactants(1,:),reactants(1,:),rate_str);
         end
     else % ignore higher order rxns
-        
     end
-    
-end
 
-fclose(fid);
+
