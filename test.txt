@@ -1,8 +1,8 @@
 {
 	"settings" : {
 		"tstart" : 0,
-		"tend"   : 100,
-		"tsteps" : 1e6,
+		"tend"   : 5000,
+		"tsteps" : 1e5,
 		"volume" : 1
 	},
 	"constants" : {
@@ -16,7 +16,6 @@
 		"C" : 0
 	},
 	"reactions" : {
-        "r0" : "A + 2B + 3C ->{k1+k2} 4D +5C",
 		"r1" : "A ->{k1} B",
 		"r2" : "B ->{k2} A",
 		"r3" : "B ->{k3} C"

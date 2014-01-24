@@ -26,25 +26,10 @@ species_unpacker_gen(species);
 dependency = get_dependency(reactions);
 
 %% Simulate
-
-[t,s] = simulate_SSA(settings,constants,species,reactions);
-
-
-disp(1)
-
-function [t,s] = simulate_SSA(settings,constants,species,reactions)
-% Get constants and species names so we don't have to use cell arrays in
-% compiled functions
-constant_names = char(fieldnames(constants));
-species_names = char(fieldnames(species));
-reaction_names = char(fieldnames(reactions));
-
 % Call compiled solver
-[t_out,s_out] = solve_direct(settings,species,species_names,reactions,reaction_names);
+% [t_out,s_out] = solve_direct_mex(settings,species,reactions);
+[t_out,s_out] = solve_first_reaction_mex(settings,species,reactions);
 
-% Diagnostic Plots
 plot(t_out,s_out())
 
-% Convert structs to arrays for output
-t = 1;
-s = 1;
+disp(1)

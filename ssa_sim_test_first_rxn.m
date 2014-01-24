@@ -1,7 +1,7 @@
 function ssa_sim_test
 
 %% Parse input file
-[settings,constants,species,reactions] = parse_input('test2.txt');
+[settings,constants,species,reactions] = parse_input('test.txt');
 
 %% Initialize
 % Generate reaction propensity solver
@@ -18,4 +18,4 @@ settings.tsteps = 3;
 
 %% Simulate
 % Call compiled solver
-[t_out,s_out] = solve_direct(settings,species,reactions);
+[t_out,s_out] = solve_first_reaction(settings,species,reactions);

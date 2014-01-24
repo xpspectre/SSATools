@@ -1,4 +1,4 @@
-function [t_out,s_out] = solve_direct(settings,species,reactions)
+function [t_out,s_out] = solve_first_reaction(settings,species,reactions)
     % 
     % species : struct with species names as fields and initial counts as values
     % c       : struct
@@ -30,16 +30,11 @@ function [t_out,s_out] = solve_direct(settings,species,reactions)
         % Get reaction propensities
         a = get_propensities(s_current,V);
 
-        % Propensity normalization
-        a0 = sum(a);
-
-        % Calculate waiting time tau with 1 random number
-        tau = (1/a0)*log(1/rand);
-
-        % Find index u of next reaction such that a1 + a2+ ... + au-1 < ao*r2 <
-        % a1 + a2 + ..... + au
-        % a is first normalized to create a vector of probabilities for each rxn
-        u = pick_rxn(a/a0);
+        % Calculate M independent random numbers
+        taus = (1./a).*log(1./rand(1,M));
+        
+        % Get first reaction (minimum tau)
+        [tau, u] = min(taus);
 
         % Update species
         s_current = get_updates(s_current,u);
@@ -57,25 +52,3 @@ function [t_out,s_out] = solve_direct(settings,species,reactions)
     % Output
     t_out = t_store(1:step);
     s_out = s_store(1:step,:);
-
-
-function state = pick_rxn(probs)
-    % Vectorized function to pick a state to jump to based on a list of
-    % probabilities. All we're doing is creating a list of bins
-    % that a randomly chosen number from 0-1 can fall into, and then
-    % searching for that bin using vector operations. Same thing can be
-    % accomplished via a for loop.
-    %
-    % This vectorized version is significantly faster than the double for
-    % loop implementation for large reaction lists.
-    
-    selection = rand;
-    
-    P = cumsum([0, probs]);
-    P(end) = 1;
-    
-    C = P >= selection;
-    D = P < selection;
-    
-    state = norm(find(~(C(2:end) - D(1:end-1))));
-    
