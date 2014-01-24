@@ -20,7 +20,7 @@ function [t_out,s_out] = solve_direct(settings,species,species_names,reactions,r
     % Preallocate and initialize t and s
     t_store = [tstart; zeros(tsteps-1,1)];
     for i = 1:N
-        s_store.(species_names(i)) = [species.(species_names(i)); zeros(tsteps-1,1)];
+        s_store.(species_names(i)) = [species.(species_names(i,:)); zeros(tsteps-1,1)];
     end
     t = tstart;
     s_current = species;

@@ -24,6 +24,9 @@ for i = 1:L
     fprintf(fid,'%s = %f;\n',constant_names(i,:),constants.(constant_names(i,:)));
 end
 
+% Preallocate reaction propensity array
+fprintf(fid,'a = zeros(1,%d);\n',M);
+
 % Default mass action kinetics
 % Print each propensity expression
 for i = 1:M
