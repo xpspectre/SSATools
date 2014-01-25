@@ -49,32 +49,39 @@ function [settings,constants,species,reactions] =  parse_input(filename)
         
         % Process forward rxn ( of the form: ->{[rate]} )
         %   Assumes a forward rate is always present
-        f_rate_str = parts.f_rate(4:end-1);
-        if strcmpi(f_rate_str(1),'''') == 1 && strcmpi(f_rate_str(end),'''') == 1
-            f_rate_type = 'raw';
+        rate_str = parts.f_rate(4:end-1);
+        if strcmpi(rate_str(1),'''') == 1 && strcmpi(rate_str(end),'''') == 1
+            rate_type = 'raw';
         else % default
-            f_rate_type = 'massaction';
+            rate_type = 'massaction';
         end
         
-        % Process reverse rate ( of the form: <-{[rate]} ) if present
-        %   Assumes a forward rate is always present
-        if strcmpi(parts.r_rate,'') || isempty(parts.r_rate(4:end-1)) % forward rxn only
-            r_rate_str = '';
-            r_rate_type = 'none';
-        else % reversible rxn
-            r_rate_str = parts.r_rate(4:end-1);
-            if strcmpi(r_rate_str(1),'''') == 1 && strcmpi(r_rate_str(end),'''') == 1
-                r_rate_type = 'raw';
-            else % default
-                r_rate_type = 'massaction';
-            end
-        end
-        
-        % Build reactions struct
+        % Build  forward reaction struct
         reactions.(r_names{i}).reactants = reactants;
         reactions.(r_names{i}).products = products;
-        reactions.(r_names{i}).f_rate_str = f_rate_str;
-        reactions.(r_names{i}).f_rate_type = f_rate_type;
-        reactions.(r_names{i}).r_rate_str = r_rate_str;
-        reactions.(r_names{i}).r_rate_type = r_rate_type;
+        reactions.(r_names{i}).rate_str = rate_str;
+        reactions.(r_names{i}).rate_type = rate_type;
+        
+        % Process reverse rxn ( of the form: <-{[rate]} ) if present
+        %   Assumes a forward rate is always present
+        %   Makes a new rxn titled [forwardrxn]r, otherwise the same
+        %   [forwardrxn] reactants and products reversed
+        if strcmpi(parts.r_rate,'') || isempty(parts.r_rate(4:end-1)) % forward rxn only
+            % do nothing
+        else % reversible rxn
+            rrxn_name = [r_names{i} 'r'];
+
+            rate_str = parts.r_rate(4:end-1);
+            if strcmpi(rate_str(1),'''') == 1 && strcmpi(rate_str(end),'''') == 1
+                rate_type = 'raw';
+            else % default
+                rate_type = 'massaction';
+            end
+            
+            reactions.(rrxn_name).reactants = products; % reverse of the fwd rxn
+            reactions.(rrxn_name).products = reactants;
+            reactions.(rrxn_name).rate_str = rate_str;
+            reactions.(rrxn_name).rate_type = rate_type;
+            
+        end
     end
