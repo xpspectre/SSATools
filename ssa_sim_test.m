@@ -1,7 +1,10 @@
 function ssa_sim_test
 
 %% Parse input file
-[settings,constants,species,reactions] = parse_input('test2.txt');
+[settings,constants,species,reactions] = parse_input('test.txt');
+
+% Get reduced stoichiometry reactions
+reduced_reactions = reduce_stoichimetry(reactions);
 
 %% Initialize
 % Generate reaction propensity solver
