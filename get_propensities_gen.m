@@ -40,12 +40,18 @@ fclose(fid);
 function print_propensity(fid,i,reactions)
     reaction_names = fieldnames(reactions);
     rate_str = reactions.(reaction_names{i}).rate_str;
+    
+    % 0th order rxns will have empty reactant fields
+    if isempty(reactions.(reaction_names{i}).reactants)
+        fprintf(fid,'%s * V;\n',rate_str);
+        return
+    end
+    
+    % Higher order rxns
     reactants = fieldnames(reactions.(reaction_names{i}).reactants);
     stoichs = structfun(@sum,reactions.(reaction_names{i}).reactants);
     order = sum(stoichs);
     switch order
-        case 0
-            fprintf(fid,'%s * V;\n',rate_str);
         case 1
             fprintf(fid,'s.%s * %s;\n',reactants{1},rate_str);
         case 2

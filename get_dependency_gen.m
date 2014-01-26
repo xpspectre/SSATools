@@ -15,8 +15,21 @@ M = length(reaction_names); % number of reactions
 % Augment reactions struct with DependsOn and Affects
 for i = 1:M
     rxn_i = reaction_names{i};
-    reactions.(rxn_i).DependsOn = fieldnames(reactions.(rxn_i).reactants);
-    reactions.(rxn_i).Affects = unique([reactions.(rxn_i).DependsOn; fieldnames(reactions.(rxn_i).products)]);
+    
+    % DependsOn
+    if isempty(reactions.(rxn_i).reactants) % no reactants
+        reactions.(rxn_i).DependsOn = {};
+    else
+        reactions.(rxn_i).DependsOn = fieldnames(reactions.(rxn_i).reactants);
+    end
+    
+    % Affects
+    if isempty(reactions.(rxn_i).products) % no products
+        reactions.(rxn_i).Affects = unique(reactions.(rxn_i).DependsOn);
+    else
+        reactions.(rxn_i).Affects = unique([reactions.(rxn_i).DependsOn; fieldnames(reactions.(rxn_i).products)]);
+    end
+    
 end
 
 % Preallocate dependency graph
@@ -34,7 +47,7 @@ for i = 1:M
         
         % rxn_i dependent species found in rxn_j affected species?
         % Add index of reaction
-        if sum(ismember(reactions.(rxn_i).DependsOn,reactions.(rxn_j).Affects))
+        if ~isempty(ismember(reactions.(rxn_i).DependsOn,reactions.(rxn_j).Affects))
             dependency.(rxn_i).In = [dependency.(rxn_i).In; j]; % Depends on species affected by these rxns
             dependency.(rxn_j).Out = [dependency.(rxn_j).Out; i]; % Affects species that these rxns depend on
         end

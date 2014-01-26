@@ -12,20 +12,27 @@ M = length(reaction_names); % number of reactions
 
 for i = 1:M
     fprintf(fid, '\tcase %d\n',i);
-    
-    reactants = fieldnames(reactions.(reaction_names{i}).reactants);
-    reactant_stoichs = structfun(@sum,reactions.(reaction_names{i}).reactants);
-    products = fieldnames(reactions.(reaction_names{i}).products);
-    product_stoichs = structfun(@sum,reactions.(reaction_names{i}).products);
-    
+
     % Decrement reactants
-    for j = 1:length(reactants) % number of reactants
-        fprintf(fid, '\t\ts.%s = s.%s - %d;\n',reactants{j},reactants{j},reactant_stoichs(j));
+    if isempty(reactions.(reaction_names{i}).reactants) % 0th order/no reactants
+        % skip decrementing reactions
+    else
+        reactants = fieldnames(reactions.(reaction_names{i}).reactants);
+        reactant_stoichs = structfun(@sum,reactions.(reaction_names{i}).reactants);
+        for j = 1:length(reactants) % number of reactants
+            fprintf(fid, '\t\ts.%s = s.%s - %d;\n',reactants{j},reactants{j},reactant_stoichs(j));
+        end
     end
-    
+
     % Increment products
-    for j = 1:length(products) % number of products
-        fprintf(fid, '\t\ts.%s = s.%s + %d;\n',products{j},products{j},product_stoichs(j));
+    if isempty(reactions.(reaction_names{i}).products) % degradations/no products
+        % skip incrementing reactions
+    else
+        products = fieldnames(reactions.(reaction_names{i}).products);
+        product_stoichs = structfun(@sum,reactions.(reaction_names{i}).products);
+        for j = 1:length(products) % number of products
+            fprintf(fid, '\t\ts.%s = s.%s + %d;\n',products{j},products{j},product_stoichs(j));
+        end
     end
 end
 
