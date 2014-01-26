@@ -1,5 +1,7 @@
 function ssa_sim(filename)
 
+clc
+
 % Variables:
 %   N : number of species
 %   M : number of reactions
@@ -32,7 +34,7 @@ get_dependency_gen(reduced_reactions);
 % Call compiled solver
 % [t_out,s_out] = solve_direct(settings,species,reactions);
 % [t_out,s_out] = solve_first_reaction(settings,species,reactions);
-[t_out,s_out] = solve_next_reaction(settings,species,reactions);
+[t_out,s_out] = solve_next_reaction_mex(settings,species,reactions);
 
 plot(t_out,s_out())
 legend('A','B','C')

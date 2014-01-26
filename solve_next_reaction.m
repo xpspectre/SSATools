@@ -23,22 +23,12 @@ function [t_out,s_out] = solve_next_reaction(settings,species,reactions)
     t = tstart;
     s_current = species;
     step = 1;
-    
-    % TEST
-%     tdiff = zeros(tsteps,1);
-    
+
     % Get all reaction propensities
     a = get_propensities(s_current,0,V); % note updated syntax
     
     % Get putative times
     taus = (1./a).*log(1./rand(1,M)) + t; % include starting t for absolute times
-    
-    % Mark whether a reaction was 0 previously
-    was_zero = (a==0);
-    % Mark last time reaction was nonzero (irrevelent for nonzero propensity rxns)
-    last_nonzero_t = was_zero*t;
-    % Mark last propensity
-    last_nonzero_a = was_zero*0;
     
     % Store putative times in indexed priority queue
     ipq = Indexed_Priority_Queue([1:M;taus]);
@@ -62,43 +52,42 @@ function [t_out,s_out] = solve_next_reaction(settings,species,reactions)
         affected_nodes = get_dependency(u);
         
         % Update affected nodes
-        for n = affected_nodes % select reaction
+        for i = 1:length(affected_nodes) % select reaction
+            
+            n = affected_nodes(i);
             
             % Get new propensities
             an_old = a(n);
             a(n) = get_propensities(s_current,n,V);
             
             % Change times
+            % Big thanks to the creators of Dizzy (http://magnet.systemsbiology.net/software/Dizzy/)
+            % I had to look at their source code to figure out what happens
+            % when a rxn goes from 0 propensity to non-0 propensity as a
+            % result of another rxn. It's not very clear what Gibson and
+            % Bruck's paper or any of the written sources do from their
+            % texts. Instead, I got a solution from
+            % \src\org\systemsbiology\chem\SimulatorStochasticGibsonBruck.java,
+            % updateReactionRateAndTime function. They just generated a new
+            % random time...
             if n ~= u
-                if an_old == 0 && a(n) ~= 0 % switched back to nonzero propensity
-                    disp('ghaghfawhfoawghw')
-%                     was_zero(n) = 0;
-                    t_last_nonzero = last_nonzero_t(n);
-                    a_last_nonzero = last_nonzero_a(n);
-                    tau_a = a_last_nonzero/a(n) * (t - t_last_nonzero) + t;
-                elseif an_old ~= 0 && a(n) == 0 % becomes zero propensity
-%                     was_zero(n) = 1;
-                    last_nonzero_t(n) = t;
-                    last_nonzero_a(n) = an_old;
-                    tau_a = Inf;
-                else
+                if a(n) > 0 && an_old > 0 % non-0 propensities
                     tau_a = an_old/a(n) * (ipq.get_rxn(n) - t) + t;
+                else % became 0 propensity or was 0 propensity 
+                    if a(n) > 0 % switched to non-0 propensity
+                        tau_a = 1/a(n)*log(1/rand) + t;
+                    else % remains/became 0 propensity
+                        tau_a = Inf;
+                    end
                 end
-                %TEST
-%                 tdiff(step)=tau_a<t;
             else % n == u
                 tau_a = 1/a(n)*log(1/rand) + t;
-                %TEST
-%                 tdiff(step)=tau_a<t;
             end
             ipq.update_rxn(n,tau_a);
         end
         
     end
     
-    %TEST
-%     find(tdiff<0)
-
     % Output
     t_out = t_store(1:step);
     s_out = s_store(1:step,:);
