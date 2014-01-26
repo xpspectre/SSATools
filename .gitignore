@@ -8,3 +8,5 @@ species_unpacker.m
 get_dependency.m
 *.asv
 codegen/
+*.prj
+*.mexw64
