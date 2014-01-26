@@ -31,7 +31,14 @@ function [t_out,s_out] = solve_next_reaction(settings,species,reactions)
     a = get_propensities(s_current,0,V); % note updated syntax
     
     % Get putative times
-    taus = (1./a).*log(1./rand(1,M));
+    taus = (1./a).*log(1./rand(1,M)) + t; % include starting t for absolute times
+    
+    % Mark whether a reaction was 0 previously
+    was_zero = (a==0);
+    % Mark last time reaction was nonzero (irrevelent for nonzero propensity rxns)
+    last_nonzero_t = was_zero*t;
+    % Mark last propensity
+    last_nonzero_a = was_zero*0;
     
     % Store putative times in indexed priority queue
     ipq = Indexed_Priority_Queue([1:M;taus]);
@@ -63,7 +70,20 @@ function [t_out,s_out] = solve_next_reaction(settings,species,reactions)
             
             % Change times
             if n ~= u
-                tau_a = an_old/a(n) * (ipq.get_rxn(n) - t) + t;
+                if an_old == 0 && a(n) ~= 0 % switched back to nonzero propensity
+                    disp('ghaghfawhfoawghw')
+%                     was_zero(n) = 0;
+                    t_last_nonzero = last_nonzero_t(n);
+                    a_last_nonzero = last_nonzero_a(n);
+                    tau_a = a_last_nonzero/a(n) * (t - t_last_nonzero) + t;
+                elseif an_old ~= 0 && a(n) == 0 % becomes zero propensity
+%                     was_zero(n) = 1;
+                    last_nonzero_t(n) = t;
+                    last_nonzero_a(n) = an_old;
+                    tau_a = Inf;
+                else
+                    tau_a = an_old/a(n) * (ipq.get_rxn(n) - t) + t;
+                end
                 %TEST
 %                 tdiff(step)=tau_a<t;
             else % n == u
