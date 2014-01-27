@@ -10,3 +10,6 @@ get_dependency.m
 codegen/
 *.prj
 *.mexw64
+/*.mexa64
+/*~
+/*.pdf
