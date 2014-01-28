@@ -51,6 +51,7 @@ function [settings,constants,species,reactions] =  parse_input(filename)
         %   Assumes a forward rate is always present
         rate_str = parts.f_rate(4:end-1);
         if strcmpi(rate_str(1),'''') == 1 && strcmpi(rate_str(end),'''') == 1
+            rate_str = rate_str(2:end-1); % strip quotes
             rate_type = 'raw';
         else % default
             rate_type = 'massaction';
@@ -73,6 +74,7 @@ function [settings,constants,species,reactions] =  parse_input(filename)
 
             rate_str = parts.r_rate(4:end-1);
             if strcmpi(rate_str(1),'''') == 1 && strcmpi(rate_str(end),'''') == 1
+                rate_str = rate_str(2:end-1); % strip quotes
                 rate_type = 'raw';
             else % default
                 rate_type = 'massaction';
