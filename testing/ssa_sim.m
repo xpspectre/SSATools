@@ -32,9 +32,9 @@ get_dependency_gen(reduced_reactions);
 
 %% Simulate
 % Call compiled solver
-% [t_out,s_out] = solve_direct(settings,species,reactions);
+[t_out,s_out] = solve_direct(settings,species,reactions);
 % [t_out,s_out] = solve_first_reaction(settings,species,reactions);
-[t_out,s_out] = solve_next_reaction_mex(settings,species,reactions);
+% [t_out,s_out] = solve_next_reaction_mex(settings,species,reactions);
 
 plot(t_out,s_out())
 legend('A','B','C')
