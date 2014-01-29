@@ -23,19 +23,23 @@ function [settings,constants,species,reactions] =  parse_input(filename)
         
         % Make sure all species found in reaction are also initialized in
         % species; if not, add and initialize to 0
-        reactants = fieldnames(reactions.(rxn_names{i}).reactants);
-        for j = 1:length(reactants)
-            if ~ismember(reactants{j},species_list)
-                warning('parse_input: species %s not found in species list ... adding',reactants{j})
-                species = add_species(species,reactants{j},0);
+        if ~isempty(reactions.(rxn_names{i}).reactants)
+            reactants = fieldnames(reactions.(rxn_names{i}).reactants);
+            for j = 1:length(reactants)
+                if ~ismember(reactants{j},species_list)
+                    warning('parse_input: species %s not found in species list ... adding',reactants{j})
+                    species = add_species(species,reactants{j},0);
+                end
             end
         end
         
-        products = fieldnames(reactions.(rxn_names{i}).products);
-        for j = 1:length(products)
-            if ~ismember(products{j},species_list)
-                warning('parse_input: species %s not found in species list ... adding',products{j})
-                species = add_species(species,products{j},0);
+        if ~isempty(reactions.(rxn_names{i}).products)
+            products = fieldnames(reactions.(rxn_names{i}).products);
+            for j = 1:length(products)
+                if ~ismember(products{j},species_list)
+                    warning('parse_input: species %s not found in species list ... adding',products{j})
+                    species = add_species(species,products{j},0);
+                end
             end
         end
     end
