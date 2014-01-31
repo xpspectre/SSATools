@@ -27,12 +27,13 @@ get_updates_gen(reduced_reactions);
 % Generate species unpacking (struct->array) function
 species_unpacker_gen(species);
 
-% Make dependency graph function
-get_dependency_gen(reduced_reactions);
+% Reload directories
+rehash
 
 %% Simulate
-% Call compiled solver
-[t_out,s_out] = solve_direct(settings,species,reactions);
+% Call solver - not compileable for now
+[t_out,s_out] = solve_aei_tau_leap(settings,species,reactions);
+% [t_out,s_out] = solve_direct(settings,species,reactions);
 % [t_out,s_out] = solve_first_reaction(settings,species,reactions);
 % [t_out,s_out] = solve_next_reaction_mex(settings,species,reactions);
 
