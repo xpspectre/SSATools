@@ -3,28 +3,35 @@ function [settings,constants,species,reactions] =  parse_input(filename)
     % Read file into a string and parse
     data = parse_json(fileread(filename));
     
-    % Parse Settings
+    % Parse Settings %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     settings = data.settings;
     
-    % Parse Constants
+    % Make a random seed if one isn't supplied
+    if isempty(settings.seed)
+        settings.seed = now;
+    end
+    
+    % Parse Constants %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     constants = data.constants;
     
-    % Parse Species
+    % Parse Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     species = data.species;
     species_list = fieldnames(species); % for checking reactions
     
-    % Parse Reactions
+    % Parse Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     rxn_names = fieldnames(data.reactions);
     num_rxns = length(rxn_names);
     reactions = [];
     for i = 1:num_rxns
         % Add reaction
-        reactions = add_reaction(reactions,rxn_names{i},data.reactions.(rxn_names{i}));
+        % Get next available rxn_idx
+        rxn_idx = length(reactions) + 1;
+        reactions = add_reaction(reactions,rxn_idx,data.reactions.(rxn_names{i}));
         
         % Make sure all species found in reaction are also initialized in
         % species; if not, add and initialize to 0
-        if ~isempty(reactions.(rxn_names{i}).reactants)
-            reactants = fieldnames(reactions.(rxn_names{i}).reactants);
+        if ~isempty(reactions(i).reactants)
+            reactants = fieldnames(reactions(i).reactants);
             for j = 1:length(reactants)
                 if ~ismember(reactants{j},species_list)
                     warning('parse_input: species %s not found in species list ... adding',reactants{j})
@@ -33,8 +40,8 @@ function [settings,constants,species,reactions] =  parse_input(filename)
             end
         end
         
-        if ~isempty(reactions.(rxn_names{i}).products)
-            products = fieldnames(reactions.(rxn_names{i}).products);
+        if ~isempty(reactions(i).products)
+            products = fieldnames(reactions(i).products);
             for j = 1:length(products)
                 if ~ismember(products{j},species_list)
                     warning('parse_input: species %s not found in species list ... adding',products{j})

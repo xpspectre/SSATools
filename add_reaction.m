@@ -1,11 +1,11 @@
-function reactions = add_reaction(reactions,rxn_name,rxn_str)
+function reactions = add_reaction(reactions,rxn_idx,rxn_str)
     % Add reaction (and its reverse, if applicable) to reactions struct
     % Args: 
     %   reactions : struct containing reactions
-    %   rxn_name : string containing reaction name
+    %   rxn_idx : number of reaction index
     %   rxn_str : string containing reaction
     % Returns:
-    %   reactions : struct containing reactions with added rxn
+    %   reactions : struct array containing reactions with added rxn
 
     % Get [reactants_str] ->{[rate_str]} [products_str]
     p1 = '^(?<reactants>.*?)';
@@ -48,10 +48,10 @@ function reactions = add_reaction(reactions,rxn_name,rxn_str)
     end
 
     % Build  forward reaction struct
-    reactions.(rxn_name).reactants = reactants;
-    reactions.(rxn_name).products = products;
-    reactions.(rxn_name).rate_str = rate_str;
-    reactions.(rxn_name).rate_type = rate_type;
+    reactions(rxn_idx).reactants = reactants;
+    reactions(rxn_idx).products = products;
+    reactions(rxn_idx).rate_str = rate_str;
+    reactions(rxn_idx).rate_type = rate_type;
 
     % Process reverse rxn ( of the form: <-{[rate]} ) if present
     %   Assumes a forward rate is always present
@@ -60,7 +60,7 @@ function reactions = add_reaction(reactions,rxn_name,rxn_str)
     if strcmpi(parts.r_rate,'') || isempty(parts.r_rate(4:end-1)) % forward rxn only
         % do nothing
     else % reversible rxn
-        rrxn_name = [rxn_name 'r'];
+        rrxn_idx = rxn_idx + 1;
 
         rate_str = parts.r_rate(4:end-1);
         if strcmpi(rate_str(1),'''') == 1 && strcmpi(rate_str(end),'''') == 1
@@ -70,9 +70,9 @@ function reactions = add_reaction(reactions,rxn_name,rxn_str)
             rate_type = 'massaction';
         end
 
-        reactions.(rrxn_name).reactants = products; % reverse of the fwd rxn
-        reactions.(rrxn_name).products = reactants;
-        reactions.(rrxn_name).rate_str = rate_str;
-        reactions.(rrxn_name).rate_type = rate_type;
+        reactions(rrxn_idx).reactants = products; % reverse of the fwd rxn
+        reactions(rrxn_idx).products = reactants;
+        reactions(rrxn_idx).rate_str = rate_str;
+        reactions(rrxn_idx).rate_type = rate_type;
 
     end

@@ -7,9 +7,8 @@ fid = fopen('get_propensities.m','w');
 fprintf(fid, 'function a = get_propensities(s,u,V)\n');
 
 constant_names = fieldnames(constants);
-reaction_names = fieldnames(reactions);
 L = length(constant_names); % number of constants
-M = length(reaction_names); % number of reactions
+M = length(reactions);
 
 % Assign all the constants
 for i = 1:L
@@ -38,21 +37,20 @@ fprintf(fid, 'end\n');
 fclose(fid);
 
 function print_propensity(fid,i,reactions)
-    reaction_names = fieldnames(reactions);
-    rate_str = reactions.(reaction_names{i}).rate_str;
-    rate_type = reactions.(reaction_names{i}).rate_type;
+    rate_str = reactions(i).rate_str;clc
+    rate_type = reactions(i).rate_type;
     
     % Mass Action
     if strcmpi(rate_type,'massaction')
         % 0th order rxns will have empty reactant fields
-        if isempty(reactions.(reaction_names{i}).reactants)
+        if isempty(reactions(i).reactants)
             fprintf(fid,'%s * V;\n',rate_str);
             return
         end
 
         % Higher order rxns
-        reactants = fieldnames(reactions.(reaction_names{i}).reactants);
-        stoichs = structfun(@sum,reactions.(reaction_names{i}).reactants);
+        reactants = fieldnames(reactions(i).reactants);
+        stoichs = structfun(@sum,reactions(i).reactants);
         order = sum(stoichs);
         switch order
             case 1

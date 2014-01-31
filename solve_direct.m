@@ -10,12 +10,15 @@ function [t_out,s_out] = solve_direct(settings,species,reactions)
     tend   = settings.tend;
     tsteps = settings.tsteps;
     V = settings.volume;
+    
+    % Set seed for random number generator
+    rng(settings.seed);
 
     % Calculate number of species
     N = length(structfun(@isempty,species));
 
     % Calculate number of reactions
-    M = length(structfun(@isempty,reactions));
+    M = length(reactions);
 
     % Preallocate and initialize t and s
     t_store = [tstart; zeros(tsteps-1,1)];
