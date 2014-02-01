@@ -30,6 +30,9 @@ species_unpacker_gen(species);
 % Make dependency graph function
 get_dependency_gen(reduced_reactions);
 
+% Reload directories
+rehash
+
 %% Simulate
 % Call compiled solver
 [t_out,s_out] = solve_direct(settings,species,reactions);
