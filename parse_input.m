@@ -5,10 +5,11 @@ function [settings,constants,species,reactions] =  parse_input(filename)
     
     % Parse Settings %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     settings = data.settings;
+    settings_fields = fieldnames(settings);
     
     % Make a random seed if one isn't supplied
-    if isempty(settings.seed)
-        settings.seed = now;
+    if ~ismember('seed',settings_fields) || isempty(settings.seed)
+        settings.seed = int32(RandStream.shuffleSeed);
     end
     
     % Parse Constants %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
